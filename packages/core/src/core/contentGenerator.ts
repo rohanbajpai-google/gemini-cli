@@ -25,6 +25,8 @@ import { parseCustomHeaders } from '../utils/customHeaderUtils.js';
 import { RecordingContentGenerator } from './recordingContentGenerator.js';
 import { getVersion, resolveModel } from '../../index.js';
 import type { LlmRole } from '../telemetry/llmRole.js';
+import { isAnthropicModel } from '../config/models.js';
+import { AnthropicContentGenerator } from './anthropicContentGenerator.js';
 
 /**
  * Interface abstracting the core functionalities for generating content and counting tokens.
@@ -182,6 +184,11 @@ export async function createContentGenerator(
       config.authType === AuthType.COMPUTE_ADC
     ) {
       const httpOptions = { headers: baseHeaders };
+      if (isAnthropicModel(model)) {
+        throw new Error(
+          'Anthropic models are not supported with LOGIN_WITH_GOOGLE or COMPUTE_ADC auth types. Please use Vertex AI auth.',
+        );
+      }
       return new LoggingContentGenerator(
         await createCodeAssistContentGenerator(
           httpOptions,
@@ -197,6 +204,28 @@ export async function createContentGenerator(
       config.authType === AuthType.USE_GEMINI ||
       config.authType === AuthType.USE_VERTEX_AI
     ) {
+      if (
+        config.authType === AuthType.USE_VERTEX_AI &&
+        isAnthropicModel(model)
+      ) {
+        const projectId =
+          process.env['GOOGLE_CLOUD_PROJECT'] ||
+          process.env['GOOGLE_CLOUD_PROJECT_ID'];
+        const location = process.env['GOOGLE_CLOUD_LOCATION'];
+
+        if (!projectId || !location) {
+          throw new Error(
+            'GOOGLE_CLOUD_PROJECT and GOOGLE_CLOUD_LOCATION must be set for calling Anthropic models via Vertex AI.',
+          );
+        }
+
+        const anthropicGenerator = new AnthropicContentGenerator(
+          projectId,
+          location,
+        );
+        return new LoggingContentGenerator(anthropicGenerator, gcConfig);
+      }
+
       let headers: Record<string, string> = { ...baseHeaders };
       if (gcConfig?.getUsageStatisticsEnabled()) {
         const installationManager = new InstallationManager();

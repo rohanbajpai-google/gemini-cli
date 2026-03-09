@@ -37,12 +37,11 @@ export function patchStdio(): () => void {
   const previousStdoutWrite = process.stdout.write;
   const previousStderrWrite = process.stderr.write;
 
-  process.stdout.write = (
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  process.stdout.write = ((
     chunk: Uint8Array | string,
-    encodingOrCb?:
-      | BufferEncoding
-      | ((err?: NodeJS.ErrnoException | null) => void),
-    cb?: (err?: NodeJS.ErrnoException | null) => void,
+    encodingOrCb?: BufferEncoding | ((err?: Error) => void),
+    cb?: (err?: Error) => void,
   ) => {
     const encoding =
       typeof encodingOrCb === 'string' ? encodingOrCb : undefined;
@@ -52,14 +51,13 @@ export function patchStdio(): () => void {
       callback();
     }
     return true;
-  };
+  }) as unknown as typeof process.stdout.write;
 
-  process.stderr.write = (
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  process.stderr.write = ((
     chunk: Uint8Array | string,
-    encodingOrCb?:
-      | BufferEncoding
-      | ((err?: NodeJS.ErrnoException | null) => void),
-    cb?: (err?: NodeJS.ErrnoException | null) => void,
+    encodingOrCb?: BufferEncoding | ((err?: Error) => void),
+    cb?: (err?: Error) => void,
   ) => {
     const encoding =
       typeof encodingOrCb === 'string' ? encodingOrCb : undefined;
@@ -69,7 +67,7 @@ export function patchStdio(): () => void {
       callback();
     }
     return true;
-  };
+  }) as unknown as typeof process.stderr.write;
 
   return () => {
     process.stdout.write = previousStdoutWrite;

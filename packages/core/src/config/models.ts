@@ -13,6 +13,14 @@ export const DEFAULT_GEMINI_MODEL = 'gemini-2.5-pro';
 export const DEFAULT_GEMINI_FLASH_MODEL = 'gemini-2.5-flash';
 export const DEFAULT_GEMINI_FLASH_LITE_MODEL = 'gemini-2.5-flash-lite';
 
+// Anthropic Models
+export const ANTHROPIC_CLAUDE_OPUS_4_6 =
+  'publishers/anthropic/models/claude-opus-4-6';
+export const ANTHROPIC_CLAUDE_3_5_SONNET_V2 =
+  'publishers/anthropic/models/claude-3-5-sonnet-v2@20241022';
+export const ANTHROPIC_CLAUDE_3_5_HAIKU =
+  'publishers/anthropic/models/claude-3-5-haiku@20241022';
+
 export const VALID_GEMINI_MODELS = new Set([
   PREVIEW_GEMINI_MODEL,
   PREVIEW_GEMINI_3_1_MODEL,
@@ -21,6 +29,9 @@ export const VALID_GEMINI_MODELS = new Set([
   DEFAULT_GEMINI_MODEL,
   DEFAULT_GEMINI_FLASH_MODEL,
   DEFAULT_GEMINI_FLASH_LITE_MODEL,
+  ANTHROPIC_CLAUDE_OPUS_4_6,
+  ANTHROPIC_CLAUDE_3_5_SONNET_V2,
+  ANTHROPIC_CLAUDE_3_5_HAIKU,
 ]);
 
 export const PREVIEW_GEMINI_MODEL_AUTO = 'auto-gemini-3';
@@ -217,6 +228,26 @@ export function isAutoModel(model: string): boolean {
  */
 export function supportsMultimodalFunctionResponse(model: string): boolean {
   return model.startsWith('gemini-3-');
+}
+
+/**
+ * Checks if the model is an Anthropic model.
+ *
+ * @param model The model name to check.
+ * @returns True if the model is an Anthropic model.
+ */
+export function isAnthropicModel(model: string): boolean {
+  return model.startsWith('claude-') || model.includes('anthropic');
+}
+
+/**
+ * Checks if the model needs to be run on Vertex AI
+ *
+ * @param model The model name to check.
+ * @returns True if the model needs to be run on Vertex AI.
+ */
+export function isVertexModel(model: string): boolean {
+  return isAnthropicModel(model);
 }
 
 /**

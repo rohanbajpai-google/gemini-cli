@@ -130,6 +130,12 @@ export function getDisplayString(model: string) {
       return PREVIEW_GEMINI_FLASH_MODEL;
     case PREVIEW_GEMINI_3_1_CUSTOM_TOOLS_MODEL:
       return PREVIEW_GEMINI_3_1_MODEL;
+    case ANTHROPIC_CLAUDE_OPUS_4_6:
+      return 'Claude Opus 4.6';
+    case ANTHROPIC_CLAUDE_3_5_SONNET_V2:
+      return 'Claude 3.5 Sonnet';
+    case ANTHROPIC_CLAUDE_3_5_HAIKU:
+      return 'Claude 3.5 Haiku';
     default:
       return model;
   }

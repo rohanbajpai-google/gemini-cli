@@ -28,6 +28,9 @@ import {
   isActiveModel,
   PREVIEW_GEMINI_3_1_MODEL,
   PREVIEW_GEMINI_3_1_CUSTOM_TOOLS_MODEL,
+  ANTHROPIC_CLAUDE_OPUS_4_6,
+  ANTHROPIC_CLAUDE_3_5_SONNET_V2,
+  ANTHROPIC_CLAUDE_3_5_HAIKU,
   isPreviewModel,
   isProModel,
 } from './models.js';
@@ -152,6 +155,16 @@ describe('getDisplayString', () => {
   it('should return PREVIEW_GEMINI_3_1_MODEL for PREVIEW_GEMINI_3_1_CUSTOM_TOOLS_MODEL', () => {
     expect(getDisplayString(PREVIEW_GEMINI_3_1_CUSTOM_TOOLS_MODEL)).toBe(
       PREVIEW_GEMINI_3_1_MODEL,
+    );
+  });
+
+  it('should return friendly names for Anthropic models', () => {
+    expect(getDisplayString(ANTHROPIC_CLAUDE_OPUS_4_6)).toBe('Claude Opus 4.6');
+    expect(getDisplayString(ANTHROPIC_CLAUDE_3_5_SONNET_V2)).toBe(
+      'Claude 3.5 Sonnet',
+    );
+    expect(getDisplayString(ANTHROPIC_CLAUDE_3_5_HAIKU)).toBe(
+      'Claude 3.5 Haiku',
     );
   });
 

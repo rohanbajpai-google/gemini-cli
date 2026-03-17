@@ -16,6 +16,9 @@ import {
   DEFAULT_GEMINI_FLASH_MODEL,
   DEFAULT_GEMINI_FLASH_LITE_MODEL,
   DEFAULT_GEMINI_MODEL_AUTO,
+  ANTHROPIC_CLAUDE_OPUS_4_6,
+  ANTHROPIC_CLAUDE_3_5_SONNET_V2,
+  ANTHROPIC_CLAUDE_3_5_HAIKU,
   ModelSlashCommandEvent,
   logModelSlashCommand,
   getDisplayString,
@@ -56,6 +59,9 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
       PREVIEW_GEMINI_3_1_MODEL,
       PREVIEW_GEMINI_3_1_CUSTOM_TOOLS_MODEL,
       PREVIEW_GEMINI_FLASH_MODEL,
+      ANTHROPIC_CLAUDE_OPUS_4_6,
+      ANTHROPIC_CLAUDE_3_5_SONNET_V2,
+      ANTHROPIC_CLAUDE_3_5_HAIKU,
     ];
     if (manualModels.includes(preferredModel)) {
       return preferredModel;
@@ -155,6 +161,26 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
         },
       );
     }
+
+    // Anthropic models (via Vertex AI)
+    list.push(
+      {
+        value: ANTHROPIC_CLAUDE_OPUS_4_6,
+        title: getDisplayString(ANTHROPIC_CLAUDE_OPUS_4_6),
+        key: ANTHROPIC_CLAUDE_OPUS_4_6,
+      },
+      {
+        value: ANTHROPIC_CLAUDE_3_5_SONNET_V2,
+        title: getDisplayString(ANTHROPIC_CLAUDE_3_5_SONNET_V2),
+        key: ANTHROPIC_CLAUDE_3_5_SONNET_V2,
+      },
+      {
+        value: ANTHROPIC_CLAUDE_3_5_HAIKU,
+        title: getDisplayString(ANTHROPIC_CLAUDE_3_5_HAIKU),
+        key: ANTHROPIC_CLAUDE_3_5_HAIKU,
+      },
+    );
+
     return list;
   }, [shouldShowPreviewModels, useGemini31, useCustomToolModel]);
 

@@ -19,6 +19,9 @@ import {
   PREVIEW_GEMINI_3_1_MODEL,
   PREVIEW_GEMINI_3_1_CUSTOM_TOOLS_MODEL,
   PREVIEW_GEMINI_FLASH_MODEL,
+  ANTHROPIC_CLAUDE_OPUS_4_6,
+  ANTHROPIC_CLAUDE_3_5_SONNET_V2,
+  ANTHROPIC_CLAUDE_3_5_HAIKU,
   AuthType,
 } from '@google/gemini-cli-core';
 import type { Config, ModelSlashCommandEvent } from '@google/gemini-cli-core';
@@ -364,6 +367,72 @@ describe('<ModelDialog />', () => {
       await waitFor(() => {
         expect(mockSetModel).toHaveBeenCalledWith(
           PREVIEW_GEMINI_3_1_CUSTOM_TOOLS_MODEL,
+          true,
+        );
+      });
+      unmount();
+    });
+  });
+
+  describe('Anthropic Models', () => {
+    it('shows Anthropic Claude models in manual view', async () => {
+      mockGetDisplayString.mockImplementation((val: string) => {
+        if (val === ANTHROPIC_CLAUDE_OPUS_4_6) return 'Claude Opus 4.6';
+        if (val === ANTHROPIC_CLAUDE_3_5_SONNET_V2) return 'Claude 3.5 Sonnet';
+        if (val === ANTHROPIC_CLAUDE_3_5_HAIKU) return 'Claude 3.5 Haiku';
+        if (val === 'auto-gemini-2.5') return 'Auto (Gemini 2.5)';
+        return val;
+      });
+
+      const { lastFrame, stdin, waitUntilReady, unmount } =
+        await renderComponent();
+
+      // Go to manual view
+      await act(async () => {
+        stdin.write('\u001B[B'); // Manual
+      });
+      await waitUntilReady();
+      await act(async () => {
+        stdin.write('\r');
+      });
+      await waitUntilReady();
+
+      const output = lastFrame();
+      expect(output).toContain('Claude Opus 4.6');
+      expect(output).toContain('Claude 3.5 Sonnet');
+      expect(output).toContain('Claude 3.5 Haiku');
+      unmount();
+    });
+
+    it('selects Anthropic model when chosen in manual view', async () => {
+      const { stdin, waitUntilReady, unmount } = await renderComponent();
+
+      // Go to manual view
+      await act(async () => {
+        stdin.write('\u001B[B'); // Manual
+      });
+      await waitUntilReady();
+      await act(async () => {
+        stdin.write('\r');
+      });
+      await waitUntilReady();
+
+      // Navigate down to Opus (after gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-lite)
+      for (let i = 0; i < 3; i++) {
+        await act(async () => {
+          stdin.write('\u001B[B');
+        });
+        await waitUntilReady();
+      }
+
+      await act(async () => {
+        stdin.write('\r');
+      });
+      await waitUntilReady();
+
+      await waitFor(() => {
+        expect(mockSetModel).toHaveBeenCalledWith(
+          ANTHROPIC_CLAUDE_OPUS_4_6,
           true,
         );
       });

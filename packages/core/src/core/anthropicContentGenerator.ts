@@ -138,9 +138,13 @@ export class AnthropicContentGenerator implements ContentGenerator {
 
     if (tools) params.tools = tools;
     if (system) params.system = system;
-    if (config?.temperature !== undefined)
+    // Anthropic does not allow both temperature and top_p simultaneously.
+    // Prefer temperature when both are specified.
+    if (config?.temperature !== undefined) {
       params.temperature = config.temperature;
-    if (config?.topP !== undefined) params.top_p = config.topP;
+    } else if (config?.topP !== undefined) {
+      params.top_p = config.topP;
+    }
     if (config?.topK !== undefined) params.top_k = config.topK;
 
     return params;
@@ -568,7 +572,7 @@ export class AnthropicContentGenerator implements ContentGenerator {
         .map((c) => {
           const content = c as Content;
           return content.parts
-            ? (content.parts).map((p) => p.text || '').join(' ')
+            ? content.parts.map((p) => p.text || '').join(' ')
             : '';
         })
         .join('\n');
